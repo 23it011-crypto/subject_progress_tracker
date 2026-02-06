@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="card glass-panel">
+        <h2 class="card-title">Add New Subject</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Subject Name</label>
+                <input type="text" name="subject_name" required>
+            </div>
+            <div class="form-group">
+                <label>Course Code</label>
+                <input type="text" name="course_code" required>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Semester</label>
+                    <input type="number" name="semester" min="1" max="8" required>
+                </div>
+                <div class="form-group">
+                    <label>Total Units</label>
+                    <input type="number" name="total_units" min="1" max="10" value="5" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Assign Tutor</label>
+                <select name="assigned_teacher" required>
+                    <option value="" disabled selected>Select a Teacher</option>
+                    {% for teacher in teachers %}
+                    <option value="{{ teacher.id }}">{{ teacher.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Add Subject</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

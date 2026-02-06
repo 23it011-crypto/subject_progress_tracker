@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="card glass-panel">
+        <h2 class="card-title">Add New Teacher</h2>
+        <p style="margin-bottom: 2rem; opacity: 0.8;">Create a new teacher account for your department.</p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Create Teacher Account</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

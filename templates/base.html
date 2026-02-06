@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subject Progress Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <nav class="navbar glass-panel">
+        <div class="logo">SubjectTracker 🚀</div>
+        <div class="menu">
+            {% if user.is_authenticated %}
+            <div class="user-greeting">
+                <span>Hello, <strong>{{ user.username }}</strong></span>
+                <span class="badge">
+                    {% if user.is_hod %}HOD{% endif %}
+                    {% if user.is_teacher %}Teacher{% endif %}
+                </span>
+            </div>
+            {% if user.is_hod %}
+            <a href="{% url 'hod_dashboard' %}" class="nav-link">Dashboard</a>
+            <a href="{% url 'add_teacher' %}" class="nav-link">Add Teacher</a>
+            <a href="{% url 'manage_subjects' %}" class="nav-link">Manage</a>
+            {% endif %}
+            {% if user.is_teacher %}
+            <a href="{% url 'teacher_dashboard' %}" class="nav-link">Dashboard</a>
+            {% endif %}
+            <a href="{% url 'logout' %}" class="btn btn-logout">Logout</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="container fade-in">
+        {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} glass-panel">
+                {{ message }}
+                <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 Subject Progress Tracker System</p>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+
+</html>

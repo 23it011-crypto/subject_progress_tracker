@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="card-title" style="border:none; font-size: 2rem;">HOD Dashboard</h2>
+
+<div class="dashboard-stat-grid">
+    <div class="card glass-panel stat-card">
+        <h3>Total Subjects</h3>
+        <div class="stat-number">{{ total_subjects }}</div>
+    </div>
+    <div class="card glass-panel stat-card">
+        <h3>Completed</h3>
+        <div class="stat-number" style="color: var(--success-color);">{{ completed_subjects }}</div>
+    </div>
+    <div class="card glass-panel stat-card">
+        <h3>Pending</h3>
+        <div class="stat-number" style="color: var(--warning-color);">{{ pending_subjects }}</div>
+    </div>
+</div>
+
+<div class="card glass-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 class="card-title" style="margin:0; border:none;">Subject Progress Report</h3>
+        <a href="{% url 'add_subject' %}" class="btn btn-primary">+ Add New Subject</a>
+    </div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject Name</th>
+                    <th>Code</th>
+                    <th>Tutor</th>
+                    <th>Progress</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in subjects %}
+                <tr>
+                    <td>{{ subject.subject_name }}</td>
+                    <td>{{ subject.course_code }}</td>
+                    <td>{{ subject.assigned_teacher.username }}</td>
+                    <td>
+                        <div style="display: flex; align-items: center;">
+                            <div class="progress-container" style="width: 80px; height: 6px; margin-right: 10px;">
+                                <div class="progress-bar {% if subject.progress.progress_percentage == 100 %}bg-green{% elif subject.progress.progress_percentage > 40 %}bg-yellow{% else %}bg-red{% endif %}"
+                                    style="width: {{ subject.progress.progress_percentage }}%;"></div>
+                            </div>
+                            <span>{{ subject.progress.progress_percentage|stringformat:".0f" }}%</span>
+                        </div>
+                    </td>
+                    <td>
+                        {% if subject.progress.progress_percentage == 100 %}
+                        <span class="badge bg-green">Completed</span>
+                        {% elif subject.progress.progress_percentage > 40 %}
+                        <span class="badge bg-yellow">On Track</span>
+                        {% else %}
+                        <span class="badge bg-red">Delayed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">No subjects assigned yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

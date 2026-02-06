@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width: 700px; margin: 0 auto;">
+    <div class="card glass-panel">
+        <h2 class="card-title">Update Progress: {{ subject.subject_name }}</h2>
+        <p style="margin-bottom: 2rem; opacity: 0.8;">Mark the units you have completed for this subject.</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" id="total-units-count" value="{{ subject.total_units }}">
+
+            <div style="margin-bottom: 2rem;">
+                <label>Syllabus Completion Checklist</label>
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                    {% for i in total_units_range %}
+                    <label class="checklist-item">
+                        {% if i in checked_units %}
+                        <input type="checkbox" name="units" value="{{ i }}" class="unit-checkbox" checked>
+                        {% else %}
+                        <input type="checkbox" name="units" value="{{ i }}" class="unit-checkbox">
+                        {% endif %}
+                        Unit {{ i }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <label>Current Progress Preview</label>
+                <div class="progress-container" style="height: 20px; margin-top: 0.5rem;">
+                    <div id="preview-progress" class="progress-bar" style="width: 0%;"></div>
+                </div>
+                <div id="preview-text" style="text-align: right; margin-top: 0.5rem; font-weight: bold;">0%</div>
+            </div>
+
+            <div class="form-group">
+                <label>Remarks (Optional)</label>
+                <textarea name="remarks" rows="3"
+                    placeholder="Any comments or notes...">{{ progress.remarks|default_if_none:"" }}</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Save Progress</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
