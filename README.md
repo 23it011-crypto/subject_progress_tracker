@@ -26,3 +26,4 @@
 *   **Teacher Login**: `teacher1` / `teacherpassword`
 ```
 "# subject_progress_tracker" 
+"# sub-progress-tracker" 
