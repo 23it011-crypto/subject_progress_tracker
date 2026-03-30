@@ -11,4 +11,5 @@ urlpatterns = [
     path('hod/add_teacher/', views.add_teacher, name='add_teacher'),
     path('teacher/dashboard/', views.teacher_dashboard, name='teacher_dashboard'),
     path('teacher/update/<int:subject_id>/', views.update_progress, name='update_progress'),
+    path('hod/subject/<int:subject_id>/', views.subject_detail, name='subject_detail'),
 ]

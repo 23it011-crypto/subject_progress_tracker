@@ -102,6 +102,10 @@ def update_progress(request, subject_id):
         completed_list = request.POST.getlist('units') # List of values from checkboxes
         remarks = request.POST.get('remarks')
         
+        if not remarks or not remarks.strip():
+            messages.error(request, 'Message (Remarks) is required to update progress.')
+            return redirect('update_progress', subject_id=subject.id)
+            
         progress.update_progress(completed_list)
         progress.remarks = remarks
         progress.save()
@@ -145,3 +149,8 @@ def add_teacher(request):
             messages.error(request, f'Error creating teacher: {e}')
             
     return render(request, 'add_teacher.html')
+
+@user_passes_test(is_hod)
+def subject_detail(request, subject_id):
+    subject = get_object_or_404(Subject.objects.select_related('assigned_teacher', 'progress'), pk=subject_id)
+    return render(request, 'subject_detail.html', {'subject': subject})

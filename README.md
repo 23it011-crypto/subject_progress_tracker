@@ -2,28 +2,22 @@
 
 ## Setup Instructions
 
-1.  **Database Setup**:
-    *   Ensure MySQL is running.
-    *   Create a database named `subject_tracker_db`.
-    *   Update `subject_tracker/settings.py` with your MySQL credentials (User/Password) if different from defaults.
+1.  **Environment**:
+    *   A virtual environment `venv` is provided. Activate it to run commands:
+    *   `.\venv\Scripts\activate` (Windows)
 
-2.  **Environment**:
-    *   A virtual environment `venv` has been created. Use it to run commands.
-    *   `.\venv\Scripts\activate`
+2.  **Database Setup**:
+    *   The project is configured to use **SQLite** (`db.sqlite3`) for easier development.
+    *   No separate database server install is required.
 
-3.  **Run Migrations**:
-    ```bash
-    python manage.py makemigrations tracker
+3.  **Run migrations and create sample data**:
+    ```powershell
     python manage.py migrate
+    python manage.py create_sample_data.py
     ```
 
-4.  **Create Sample Data**:
-    ```bash
-    python create_sample_data.py
-    ```
-
-5.  **Run Server**:
-    ```bash
+4.  **Run Server**:
+    ```powershell
     python manage.py runserver
     ```
 

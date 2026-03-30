@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card glass-panel" style="max-width: 800px; margin: 0 auto; animation: var(--animation-fade-in);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 class="card-title" style="margin: 0; border: none; font-size: 2rem;">Subject Details</h2>
+        <a href="{% url 'hod_dashboard' %}" class="btn" style="border: 1px solid var(--card-border); color: var(--text-color);">Back to Dashboard</a>
+    </div>
+    
+    <div style="margin-bottom: 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div>
+            <h3 style="margin-top: 0; color: var(--primary-color);">{{ subject.subject_name }}</h3>
+            <p style="margin: 0.5rem 0; color: var(--text-muted);"><strong>Course Code:</strong> {{ subject.course_code }}</p>
+            <p style="margin: 0.5rem 0; color: var(--text-muted);"><strong>Total Units:</strong> {{ subject.total_units }}</p>
+        </div>
+        <div>
+            <h4 style="margin-top: 0;">Assignment Information</h4>
+            <p style="margin: 0.5rem 0; color: var(--text-muted);"><strong>Teacher:</strong> <span style="font-weight: 600; color: var(--text-color);">{{ subject.assigned_teacher.username }}</span></p>
+            <p style="margin: 0.5rem 0; color: var(--text-muted);"><strong>Semester:</strong> {{ subject.semester }}</p>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 2.5rem; padding: 1.5rem; background-color: #f8f9fa; border: 1px solid var(--card-border); border-radius: 6px;">
+        <h4 style="margin-top: 0; margin-bottom: 1rem;">Progress Status</h4>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+            <div class="progress-container" style="flex-grow: 1; height: 16px; margin-right: 15px;">
+                <div class="progress-bar {% if subject.progress.progress_percentage == 100 %}bg-green{% elif subject.progress.progress_percentage > 40 %}bg-yellow{% else %}bg-red{% endif %}"
+                    style="width: {{ subject.progress.progress_percentage }}%;"></div>
+            </div>
+            <strong style="font-size: 1.2rem;">{{ subject.progress.progress_percentage|stringformat:".0f" }}%</strong>
+        </div>
+        <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);"><strong>Last Updated:</strong> {{ subject.progress.last_updated|date:"F j, Y, P" }}</p>
+    </div>
+
+    <div style="padding: 1.5rem; border-left: 4px solid var(--primary-color); background-color: #e3f2fd; border-radius: 4px;">
+        <h4 style="margin-top: 0; color: var(--primary-color); display: flex; align-items: center;">
+            <svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+            Teacher's Message / Remarks
+        </h4>
+        <div style="white-space: pre-wrap; margin-bottom: 0; line-height: 1.6; padding: 12px; background-color: #ffffff; border: 1px solid #bbdefb; border-radius: 6px;">{% if subject.progress.remarks %}{{ subject.progress.remarks }}{% else %}<em style="color: var(--text-muted);">No remarks provided yet (old record/not updated).</em>{% endif %}</div>
+    </div>
+</div>
+{% endblock %}

@@ -36,7 +36,7 @@
             <tbody>
                 {% for subject in subjects %}
                 <tr>
-                    <td>{{ subject.subject_name }}</td>
+                    <td><a href="{% url 'subject_detail' subject.id %}" style="text-decoration: none; font-weight: bold; color: var(--primary-color);">{{ subject.subject_name }}</a></td>
                     <td>{{ subject.course_code }}</td>
                     <td>{{ subject.assigned_teacher.username }}</td>
                     <td>
