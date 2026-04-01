@@ -1,12 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2 class="card-title">My Assigned Subjects</h2>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <h2 class="card-title" style="margin: 0; border: none;">My Assigned Subjects</h2>
+</div>
 
+<!-- Year Filter Tabs -->
+<div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+    <a href="{% url 'teacher_dashboard' %}" class="btn {% if not current_year %}btn-primary{% endif %}" style="padding: 0.5rem 1rem;">All Years</a>
+    <a href="{% url 'teacher_dashboard' %}?year=1" class="btn {% if current_year == 1 %}btn-primary{% endif %}" style="padding: 0.5rem 1rem;">1st Year</a>
+    <a href="{% url 'teacher_dashboard' %}?year=2" class="btn {% if current_year == 2 %}btn-primary{% endif %}" style="padding: 0.5rem 1rem;">2nd Year</a>
+    <a href="{% url 'teacher_dashboard' %}?year=3" class="btn {% if current_year == 3 %}btn-primary{% endif %}" style="padding: 0.5rem 1rem;">3rd Year</a>
+    <a href="{% url 'teacher_dashboard' %}?year=4" class="btn {% if current_year == 4 %}btn-primary{% endif %}" style="padding: 0.5rem 1rem;">4th Year</a>
+</div>
 <div class="card-grid">
     {% for subject in subjects %}
     <div class="card glass-panel">
         <h3 style="margin-bottom: 0.5rem;">{{ subject.subject_name }}</h3>
-        <p style="opacity: 0.7; margin-bottom: 1rem;">{{ subject.course_code }} | Sem {{ subject.semester }}</p>
+        <p style="opacity: 0.7; margin-bottom: 1rem;">{{ subject.course_code }} | Sem {{ subject.semester }} <span class="badge" style="background: rgba(255,255,255,0.2);">Year {{ subject.year }}</span></p>
 
         <div style="margin-bottom: 1rem;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">

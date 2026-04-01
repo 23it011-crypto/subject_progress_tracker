@@ -9,9 +9,16 @@ from tracker.models import User, Subject, SubjectProgress
 def create_data():
     print("Creating sample data...")
     
+    # Admin
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser('admin', 'admin@example.com', 'adminpassword', is_admin=True)
+        print("Created Admin User: username='admin', password='adminpassword'")
+    else:
+        print("Admin User already exists.")
+
     # HOD
     if not User.objects.filter(username='hod').exists():
-        User.objects.create_superuser('hod', 'hod@example.com', 'hodpassword', is_hod=True)
+        User.objects.create_user('hod', 'hod@example.com', 'hodpassword', is_hod=True)
         print("Created HOD User: username='hod', password='hodpassword'")
     else:
         print("HOD User already exists.")

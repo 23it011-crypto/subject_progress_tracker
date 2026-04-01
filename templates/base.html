@@ -23,21 +23,36 @@
         <div class="logo">SubjectTracker 🚀</div>
         <div class="menu">
             {% if user.is_authenticated %}
-            <div class="user-greeting">
+            <div class="user-greeting" style="position: relative;">
                 <span>Hello, <strong>{{ user.username }}</strong></span>
                 <span class="badge">
+                    {% if user.is_admin %}Admin{% endif %}
                     {% if user.is_hod %}HOD{% endif %}
                     {% if user.is_teacher %}Teacher{% endif %}
                 </span>
             </div>
+            {% if user.is_admin %}
+            <a href="{% url 'admin_dashboard' %}" class="nav-link">Dashboard</a>
+            <a href="{% url 'add_teacher' %}" class="nav-link">Add Teacher</a>
+            <a href="{% url 'add_subject' %}" class="nav-link">Add Subject</a>
+            <a href="{% url 'manage_subjects' %}" class="nav-link">Manage</a>
+            {% endif %}
             {% if user.is_hod %}
             <a href="{% url 'hod_dashboard' %}" class="nav-link">Dashboard</a>
-            <a href="{% url 'add_teacher' %}" class="nav-link">Add Teacher</a>
-            <a href="{% url 'manage_subjects' %}" class="nav-link">Manage</a>
+            <a href="{% url 'manage_subjects' %}" class="nav-link">Subjects</a>
+            <a href="{% url 'activity_logs' %}" class="nav-link">Logs</a>
             {% endif %}
             {% if user.is_teacher %}
             <a href="{% url 'teacher_dashboard' %}" class="nav-link">Dashboard</a>
             {% endif %}
+            <a href="{% url 'notifications' %}" class="nav-link" style="position: relative;">
+                🔔
+                {% if unread_notifications_count > 0 %}
+                <span style="position: absolute; top: 0px; right: 0px; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: bold;">
+                    {{ unread_notifications_count }}
+                </span>
+                {% endif %}
+            </a>
             <a href="{% url 'logout' %}" class="btn btn-logout">Logout</a>
             {% endif %}
         </div>

@@ -31,12 +31,41 @@
         <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);"><strong>Last Updated:</strong> {{ subject.progress.last_updated|date:"F j, Y, P" }}</p>
     </div>
 
-    <div style="padding: 1.5rem; border-left: 4px solid var(--primary-color); background-color: #e3f2fd; border-radius: 4px;">
+    <div style="padding: 1.5rem; border-left: 4px solid var(--primary-color); background-color: #e3f2fd; border-radius: 4px; margin-top: 1.5rem;">
         <h4 style="margin-top: 0; color: var(--primary-color); display: flex; align-items: center;">
             <svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
             Teacher's Message / Remarks
         </h4>
         <div style="white-space: pre-wrap; margin-bottom: 0; line-height: 1.6; padding: 12px; background-color: #ffffff; border: 1px solid #bbdefb; border-radius: 6px;">{% if subject.progress.remarks %}{{ subject.progress.remarks }}{% else %}<em style="color: var(--text-muted);">No remarks provided yet (old record/not updated).</em>{% endif %}</div>
     </div>
+
+    <div style="margin-top: 2rem; padding: 1.5rem; background-color: #f8f9fa; border: 1px solid var(--card-border); border-radius: 6px;">
+        <h4 style="margin-top: 0; margin-bottom: 1rem;">Document Proofs</h4>
+        {% if subject.proofs.all %}
+        <ul style="list-style-type: none; padding: 0; margin: 0;">
+            {% for proof in subject.proofs.all %}
+            <li style="margin-bottom: 0.5rem;"><a href="{{ proof.file.url }}" target="_blank" style="color: var(--primary-color); text-decoration: none;">📄 View Uploaded Document ({{ proof.uploaded_at|date:"M d, Y" }})</a></li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p style="margin: 0; color: var(--text-muted);">No documents uploaded yet.</p>
+        {% endif %}
+    </div>
+
+    {% if user.is_hod %}
+    <div style="margin-top: 2rem; padding: 1.5rem; background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 6px;">
+        <h4 style="margin-top: 0; margin-bottom: 1rem; color: #856404;">Send Reminder to Teacher</h4>
+        <form method="POST" action="{% url 'send_reminder' subject.id %}" style="display: flex; gap: 1rem; align-items: center;">
+            {% csrf_token %}
+            <select name="unit" required style="padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; width: 150px;">
+                <option value="">Select Unit</option>
+                {% for i in "123456" %}
+                <option value="Unit {{ i }}">Unit {{ i }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary" style="background-color: #d39e00; color: white;">Send Reminder</button>
+        </form>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

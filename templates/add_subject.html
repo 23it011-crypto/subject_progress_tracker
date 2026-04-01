@@ -23,6 +23,25 @@
                     <input type="number" name="total_units" min="1" max="10" value="5" required>
                 </div>
             </div>
+            <div class="form-group" style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; border: 1px solid var(--card-border);">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Academic Year</label>
+                <div style="display: flex; gap: 1rem;">
+                    <label><input type="radio" name="year" value="1" required> 1st Year</label>
+                    <label><input type="radio" name="year" value="2"> 2nd Year</label>
+                    <label><input type="radio" name="year" value="3"> 3rd Year</label>
+                    <label><input type="radio" name="year" value="4"> 4th Year</label>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="date" name="start_date">
+                </div>
+                <div class="form-group">
+                    <label>End Date (Deadline)</label>
+                    <input type="date" name="end_date">
+                </div>
+            </div>
             <div class="form-group">
                 <label>Assign Tutor</label>
                 <select name="assigned_teacher" required>

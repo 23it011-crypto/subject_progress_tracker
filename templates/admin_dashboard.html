@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="header-section">
+    <h1>Administrator Dashboard</h1>
+    <p>Manage the system configuration and access control</p>
+</div>
+
+<div class="dashboard-stats fade-in">
+    <div class="stat-card glass-panel">
+        <h3>Total Teachers</h3>
+        <p class="stat-num">{{ teachers.count }}</p>
+    </div>
+    <div class="stat-card glass-panel">
+        <h3>Total Subjects</h3>
+        <p class="stat-num">{{ subjects.count }}</p>
+    </div>
+</div>
+
+<div class="grid-layout fade-in" style="margin-top: 2rem;">
+    <div class="card glass-panel">
+        <h2>Quick Actions</h2>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+            <a href="{% url 'add_teacher' %}" class="btn btn-primary">Add New Teacher</a>
+            <a href="{% url 'add_subject' %}" class="btn btn-primary">Add New Subject</a>
+            <a href="{% url 'manage_subjects' %}" class="btn">Manage Subjects</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

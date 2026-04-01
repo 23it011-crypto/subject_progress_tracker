@@ -5,7 +5,13 @@
         <h2 class="card-title">Update Progress: {{ subject.subject_name }}</h2>
         <p style="margin-bottom: 2rem; opacity: 0.8;">Mark the units you have completed for this subject.</p>
 
-        <form method="post">
+        {% if smart_suggestion %}
+        <div class="alert alert-info" style="background-color: #e0f7fa; color: #006064; border-left: 4px solid #00bcd4; padding: 1rem; margin-bottom: 2rem; border-radius: 4px;">
+            <strong>💡 Smart Suggestion:</strong> {{ smart_suggestion }}
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" id="total-units-count" value="{{ subject.total_units }}">
 
@@ -38,6 +44,12 @@
                 <label>Remarks / Message <span style="color: red;">*</span></label>
                 <textarea name="remarks" rows="3" required
                     placeholder="Progress description is mandatory...">{{ progress.remarks|default_if_none:"" }}</textarea>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 2rem; padding: 1.5rem; background: rgba(255,255,255,0.05); border: 1px dashed var(--card-border); border-radius: 8px;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Upload Document Proof (Optional)</label>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0; margin-bottom: 1rem;">Supports PDF, PPT, DOC, Images.</p>
+                <input type="file" name="proof_file" accept=".pdf,.ppt,.pptx,.doc,.docx,image/*" style="width: 100%; border: 1px solid var(--card-border); padding: 0.5rem; border-radius: 4px; background: white;">
             </div>
 
             <button type="submit" class="btn btn-primary" style="width: 100%;">Save Progress</button>

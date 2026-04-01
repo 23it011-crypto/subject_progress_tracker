@@ -22,6 +22,16 @@
         <h3 class="card-title" style="margin:0; border:none;">Subject Progress Report</h3>
         <a href="{% url 'add_subject' %}" class="btn btn-primary">+ Add New Subject</a>
     </div>
+
+    <!-- Year Filter Tabs -->
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+        <a href="{% url 'hod_dashboard' %}" class="btn {% if not current_year %}btn-primary{% endif %}" style="padding: 0.5rem 1rem;">All Years</a>
+        <a href="{% url 'hod_dashboard' %}?year=1" class="btn {% if current_year == 1 %}btn-primary{% endif %}" style="padding: 0.5rem 1rem;">1st Year</a>
+        <a href="{% url 'hod_dashboard' %}?year=2" class="btn {% if current_year == 2 %}btn-primary{% endif %}" style="padding: 0.5rem 1rem;">2nd Year</a>
+        <a href="{% url 'hod_dashboard' %}?year=3" class="btn {% if current_year == 3 %}btn-primary{% endif %}" style="padding: 0.5rem 1rem;">3rd Year</a>
+        <a href="{% url 'hod_dashboard' %}?year=4" class="btn {% if current_year == 4 %}btn-primary{% endif %}" style="padding: 0.5rem 1rem;">4th Year</a>
+    </div>
+
     <div class="table-container">
         <table>
             <thead>
@@ -41,6 +51,7 @@
                     <td>{{ subject.assigned_teacher.username }}</td>
                     <td>
                         <div style="display: flex; align-items: center;">
+                            <span class="badge bg-green" style="margin-right:0.5rem;">Year {{ subject.year }}</span>
                             <div class="progress-container" style="width: 80px; height: 6px; margin-right: 10px;">
                                 <div class="progress-bar {% if subject.progress.progress_percentage == 100 %}bg-green{% elif subject.progress.progress_percentage > 40 %}bg-yellow{% else %}bg-red{% endif %}"
                                     style="width: {{ subject.progress.progress_percentage }}%;"></div>
