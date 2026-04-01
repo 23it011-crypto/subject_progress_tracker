@@ -20,7 +20,10 @@
     </div>
 
     <nav class="navbar glass-panel">
-        <div class="logo">SubjectTracker 🚀</div>
+        <div class="logo">
+            <img src="{% static 'images/logo.png' %}" alt="Logo" style="height: 40px; margin-right: 12px; border-radius: 8px;">
+            SubjectTracker
+        </div>
         <div class="menu">
             {% if user.is_authenticated %}
             <div class="user-greeting" style="position: relative;">

@@ -11,11 +11,15 @@
             <h3 style="margin-top: 0; color: var(--primary-color);">{{ subject.subject_name }}</h3>
             <p style="margin: 0.5rem 0; color: var(--text-muted);"><strong>Course Code:</strong> {{ subject.course_code }}</p>
             <p style="margin: 0.5rem 0; color: var(--text-muted);"><strong>Total Units:</strong> {{ subject.total_units }}</p>
+            <p style="margin: 0.5rem 0; color: var(--text-muted);"><strong>Year:</strong> {{ subject.get_year_display }}</p>
         </div>
         <div>
-            <h4 style="margin-top: 0;">Assignment Information</h4>
-            <p style="margin: 0.5rem 0; color: var(--text-muted);"><strong>Teacher:</strong> <span style="font-weight: 600; color: var(--text-color);">{{ subject.assigned_teacher.username }}</span></p>
-            <p style="margin: 0.5rem 0; color: var(--text-muted);"><strong>Semester:</strong> {{ subject.semester }}</p>
+            <h4 style="margin-top: 0;">Teacher In-Charge</h4>
+            <div style="background: rgba(79, 70, 229, 0.05); padding: 1rem; border-radius: 8px; border: 1px solid rgba(79, 70, 229, 0.1);">
+                <p style="margin: 0; font-weight: 700; font-size: 1.1rem;">{{ subject.assigned_teacher.username }}</p>
+                <p style="margin: 0.2rem 0 0.8rem 0; font-size: 0.9rem; color: var(--text-muted);">{{ subject.assigned_teacher.email }}</p>
+                <a href="{% url 'subject_messages' subject.id %}" class="btn" style="width: 100%; background: var(--primary-color); color: white; border-radius: 6px; padding: 6px;">📧 Consult with Teacher</a>
+            </div>
         </div>
     </div>
 

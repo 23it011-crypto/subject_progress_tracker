@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="glass-panel card fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 class="card-title" style="border: none; margin: 0;">Academic Progress Unified Report</h2>
+        <button onclick="window.print()" class="btn btn-primary">Download/Print PDF</button>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="dashboard-stat-grid" style="margin-bottom: 3rem;">
+        <div class="stat-card glass-panel" style="background: #f8f9fa;">
+            <h3>Total Subjects</h3>
+            <div class="stat-number">{{ total_subjects }}</div>
+        </div>
+        <div class="stat-card glass-panel" style="background: #d4edda;">
+            <h3>Completed</h3>
+            <div class="stat-number">{{ completed_subjects }}</div>
+        </div>
+        <div class="stat-card glass-panel" style="background: #fff3cd;">
+            <h3>Avg. Progress</h3>
+            <div class="stat-number">{{ avg_progress }}%</div>
+        </div>
+    </div>
+
+    <!-- Subject Table -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Teacher</th>
+                    <th>Completion %</th>
+                    <th>Expected %</th>
+                    <th>Delay</th>
+                    <th>Status</th>
+                    <th>Last Updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sub in subjects %}
+                {% with expected=sub.get_expected_progress %}
+                {% with diff=sub.progress.progress_percentage|add:"-0"|add:expected|add:"-0" %}
+                <tr>
+                    <td><strong>{{ sub.subject_name }}</strong><br><small>{{ sub.course_code }}</small></td>
+                    <td>{{ sub.assigned_teacher.username }}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="progress-container" style="flex: 1;">
+                                <div class="progress-bar {% if sub.progress.progress_percentage < 40 %}bg-red{% elif sub.progress.progress_percentage < 70 %}bg-yellow{% else %}bg-green{% endif %}" 
+                                     style="width: {{ sub.progress.progress_percentage }}%;"></div>
+                            </div>
+                            <span>{{ sub.progress.progress_percentage|floatformat:1 }}%</span>
+                        </div>
+                    </td>
+                    <td>{{ expected }}%</td>
+                    <td>
+                        {% if sub.progress.progress_percentage < expected %}
+                        <span class="status-red">Behind ({{ expected|add:"-0"|add:sub.progress.progress_percentage|add:"-0" }}%)</span>
+                        {% else %}
+                        <span class="status-green">On Track</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if sub.progress.progress_percentage >= 100 %}
+                        <span class="badge bg-green">Completed</span>
+                        {% elif sub.progress.progress_percentage < 40 %}
+                        <span class="badge bg-red">At Risk</span>
+                        {% else %}
+                        <span class="badge bg-yellow">In Progress</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ sub.progress.last_updated|date:"d M Y" }}</td>
+                </tr>
+                {% endwith %}
+                {% endwith %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

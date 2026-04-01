@@ -1,31 +1,58 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2 class="card-title">Manage Subjects</h2>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <h2 class="card-title" style="margin:0; border:none;">Manage Subjects</h2>
+    <a href="{% url 'add_subject' %}" class="btn btn-primary" style="padding: 0.5rem 1.5rem;">+ Add Subject</a>
+</div>
+
+<!-- Year Filter Tabs -->
+<div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+    <a href="{% url 'manage_subjects' %}" class="btn {% if not current_year %}btn-primary{% endif %}" style="padding: 0.5rem 1rem;">All Years</a>
+    <a href="{% url 'manage_subjects' %}?year=1" class="btn {% if current_year == 1 %}btn-primary{% endif %}" style="padding: 0.5rem 1rem;">1st Year</a>
+    <a href="{% url 'manage_subjects' %}?year=2" class="btn {% if current_year == 2 %}btn-primary{% endif %}" style="padding: 0.5rem 1rem;">2nd Year</a>
+    <a href="{% url 'manage_subjects' %}?year=3" class="btn {% if current_year == 3 %}btn-primary{% endif %}" style="padding: 0.5rem 1rem;">3rd Year</a>
+    <a href="{% url 'manage_subjects' %}?year=4" class="btn {% if current_year == 4 %}btn-primary{% endif %}" style="padding: 0.5rem 1rem;">4th Year</a>
+</div>
+
 <div class="card glass-panel">
     <div class="table-container">
         <table>
             <thead>
                 <tr>
                     <th>Subject Name</th>
-                    <th>Course Code</th>
-                    <th>Semester</th>
-                    <th>Tutor</th>
+                    <th>Teacher</th>
+                    <th>Year</th>
+                    <th>Actual Progress</th>
+                    <th>Consultation</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for subject in subjects %}
+                {% with expected=subject.get_expected_progress %}
                 <tr>
-                    <td>{{ subject.subject_name }}</td>
-                    <td>{{ subject.course_code }}</td>
-                    <td>{{ subject.semester }}</td>
+                    <td><a href="{% url 'subject_detail' subject.id %}" style="text-decoration: none; font-weight: bold; color: var(--primary-color);">{{ subject.subject_name }}</a><br><small>{{ subject.course_code }}</small></td>
                     <td>{{ subject.assigned_teacher.username }}</td>
+                    <td><span class="badge" style="background: rgba(79, 70, 229, 0.1); color: var(--primary-color);">Year {{ subject.year }}</span></td>
+                    <td>
+                        <div style="display: flex; align-items: center;">
+                            <div class="progress-container" style="width: 80px; height: 6px; margin-right: 10px;">
+                                <div class="progress-bar {% if subject.progress.progress_percentage == 100 %}bg-green{% elif subject.progress.progress_percentage > 40 %}bg-yellow{% else %}bg-red{% endif %}"
+                                    style="width: {{ subject.progress.progress_percentage }}%;"></div>
+                            </div>
+                            <span>{{ subject.progress.progress_percentage|floatformat:0 }}%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <a href="{% url 'subject_messages' subject.id %}" class="btn" style="padding: 4px 10px; font-size: 12px; background: rgba(79, 70, 229, 0.1); color: var(--primary-color);">📧 Consult</a>
+                    </td>
                     <td>
                         <a href="{% url 'delete_subject' subject.id %}" class="btn btn-danger"
                             style="padding: 0.3rem 0.8rem; font-size: 0.9rem;"
                             onclick="return confirm('Are you sure you want to remove this subject?');">Remove</a>
                     </td>
                 </tr>
+                {% endwith %}
                 {% empty %}
                 <tr>
                     <td colspan="5" style="text-align: center;">No subjects to manage.</td>

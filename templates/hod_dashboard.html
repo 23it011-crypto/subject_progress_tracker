@@ -1,11 +1,22 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<h2 class="card-title" style="border:none; font-size: 2rem;">HOD Dashboard</h2>
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+    <div>
+        <h2 class="card-title" style="border:none; font-size: 2.5rem; margin-bottom: 0.5rem;">HOD Dashboard</h2>
+        <p style="color: var(--text-muted); font-size: 1.1rem;">Manage academic progress and teacher performance across all years.</p>
+    </div>
+    <img src="{% static 'images/dashboard.png' %}" alt="Dashboard Illustration" style="width: 150px; height: auto; border-radius: 12px; box-shadow: var(--glass-shadow);">
+</div>
 
 <div class="dashboard-stat-grid">
     <div class="card glass-panel stat-card">
         <h3>Total Subjects</h3>
         <div class="stat-number">{{ total_subjects }}</div>
+    </div>
+    <div class="card glass-panel stat-card">
+        <h3>Avg. Completion</h3>
+        <div class="stat-number" style="color: var(--primary-color);">{{ avg_progress }}%</div>
     </div>
     <div class="card glass-panel stat-card">
         <h3>Completed</h3>
@@ -19,8 +30,11 @@
 
 <div class="card glass-panel">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        <h3 class="card-title" style="margin:0; border:none;">Subject Progress Report</h3>
-        <a href="{% url 'add_subject' %}" class="btn btn-primary">+ Add New Subject</a>
+        <h3 class="card-title" style="margin:0; border:none;">Subject Progress Details</h3>
+        <div style="display: flex; gap: 10px;">
+            <a href="{% url 'generate_report' %}" class="btn btn-secondary" style="background:#6c757d; color:white;">Generate Unified Report</a>
+            <a href="{% url 'add_subject' %}" class="btn btn-primary">+ Add New Subject</a>
+        </div>
     </div>
 
     <!-- Year Filter Tabs -->
@@ -37,38 +51,41 @@
             <thead>
                 <tr>
                     <th>Subject Name</th>
-                    <th>Code</th>
-                    <th>Tutor</th>
-                    <th>Progress</th>
+                    <th>Teacher</th>
+                    <th>Expected %</th>
+                    <th>Actual Progress</th>
                     <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for subject in subjects %}
+                {% with expected=subject.get_expected_progress %}
                 <tr>
-                    <td><a href="{% url 'subject_detail' subject.id %}" style="text-decoration: none; font-weight: bold; color: var(--primary-color);">{{ subject.subject_name }}</a></td>
-                    <td>{{ subject.course_code }}</td>
+                    <td><a href="{% url 'subject_detail' subject.id %}" style="text-decoration: none; font-weight: bold; color: var(--primary-color);">{{ subject.subject_name }}</a><br><small>{{ subject.course_code }}</small></td>
                     <td>{{ subject.assigned_teacher.username }}</td>
+                    <td>{{ expected }}%</td>
                     <td>
                         <div style="display: flex; align-items: center;">
-                            <span class="badge bg-green" style="margin-right:0.5rem;">Year {{ subject.year }}</span>
                             <div class="progress-container" style="width: 80px; height: 6px; margin-right: 10px;">
                                 <div class="progress-bar {% if subject.progress.progress_percentage == 100 %}bg-green{% elif subject.progress.progress_percentage > 40 %}bg-yellow{% else %}bg-red{% endif %}"
                                     style="width: {{ subject.progress.progress_percentage }}%;"></div>
                             </div>
-                            <span>{{ subject.progress.progress_percentage|stringformat:".0f" }}%</span>
+                            <span>{{ subject.progress.progress_percentage|floatformat:0 }}%</span>
                         </div>
                     </td>
                     <td>
-                        {% if subject.progress.progress_percentage == 100 %}
-                        <span class="badge bg-green">Completed</span>
-                        {% elif subject.progress.progress_percentage > 40 %}
-                        <span class="badge bg-yellow">On Track</span>
+                        {% if subject.progress.progress_percentage >= expected %}
+                        <span class="badge bg-green">On Track</span>
                         {% else %}
                         <span class="badge bg-red">Delayed</span>
                         {% endif %}
                     </td>
+                    <td>
+                        <a href="{% url 'subject_messages' subject.id %}" class="btn" style="padding: 4px 12px; font-size: 13px; background: rgba(79, 70, 229, 0.1); color: var(--primary-color);">📧 Academic Consultation</a>
+                    </td>
                 </tr>
+                {% endwith %}
                 {% empty %}
                 <tr>
                     <td colspan="5" style="text-align: center;">No subjects assigned yet.</td>

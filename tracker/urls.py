@@ -1,9 +1,18 @@
 from django.urls import path
 from . import views
 
+from django.shortcuts import redirect
+
 urlpatterns = [
     path('', views.login_view, name='login'),
+    path('login/', views.login_view), # Additional path for common mistake
     path('logout/', views.logout_view, name='logout'),
+    
+    # Redirects for base paths
+    path('hod/', lambda r: redirect('hod_dashboard')),
+    path('teacher/', lambda r: redirect('teacher_dashboard')),
+    path('system-admin/', lambda r: redirect('admin_dashboard')),
+
     path('hod/dashboard/', views.hod_dashboard, name='hod_dashboard'),
     path('hod/add_subject/', views.add_subject, name='add_subject'),
     path('hod/manage/', views.manage_subjects, name='manage_subjects'),
@@ -16,5 +25,7 @@ urlpatterns = [
     path('system-admin/logs/', views.activity_logs, name='activity_logs'),
     path('notifications/', views.notifications_view, name='notifications'),
     path('notifications/read/<int:notif_id>/', views.mark_notification_read, name='mark_notification_read'),
+    path('hod/report/', views.generate_report, name='generate_report'),
+    path('subject/<int:subject_id>/messages/', views.subject_messages, name='subject_messages'),
     path('hod/send_reminder/<int:subject_id>/', views.send_reminder, name='send_reminder'),
 ]

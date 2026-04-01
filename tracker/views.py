@@ -2,11 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.db.models import Count, Q
-from .models import User, Subject, SubjectProgress, DocumentProof, Notification, ActivityLog
+from django.db.models import Count, Q, Avg
+from .models import User, Subject, SubjectProgress, DocumentProof, Notification, ActivityLog, Message
+from .services import HODService, NotificationService
 from django.utils import timezone
 from datetime import date
-from django.utils import timezone
 
 def is_hod(user):
     return user.is_authenticated and user.is_hod
@@ -21,6 +21,14 @@ def is_admin_or_hod(user):
     return user.is_authenticated and (user.is_admin or user.is_hod)
 
 def login_view(request):
+    if request.user.is_authenticated:
+        if request.user.is_admin:
+            return redirect('admin_dashboard')
+        elif request.user.is_hod:
+            return redirect('hod_dashboard')
+        elif request.user.is_teacher:
+            return redirect('teacher_dashboard')
+
     if request.method == 'POST':
         u = request.POST.get('username')
         p = request.POST.get('password')
@@ -49,7 +57,7 @@ def admin_dashboard(request):
     teachers = User.objects.filter(is_teacher=True)
     return render(request, 'admin_dashboard.html', {'subjects': subjects, 'teachers': teachers})
 
-@user_passes_test(is_hod)
+@user_passes_test(is_admin_or_hod)
 def activity_logs(request):
     logs = ActivityLog.objects.all().order_by('-timestamp')
     return render(request, 'activity_logs.html', {'logs': logs})
@@ -84,22 +92,59 @@ def send_reminder(request, subject_id):
 def hod_dashboard(request):
     year_filter = request.GET.get('year')
     if year_filter and year_filter.isdigit():
-        subjects = Subject.objects.filter(year=int(year_filter)).select_related('assigned_teacher', 'progress')
+        year_filter = int(year_filter)
     else:
-        subjects = Subject.objects.all().select_related('assigned_teacher', 'progress')
+        year_filter = None
     
-    total_subjects = subjects.count()
-    completed_subjects = subjects.filter(progress__progress_percentage=100).count()
-    pending_subjects = total_subjects - completed_subjects
+    data = HODService.get_dashboard_data(year_filter)
+    teacher_performance = HODService.get_teacher_performance()
     
     context = {
-        'subjects': subjects,
-        'total_subjects': total_subjects,
-        'completed_subjects': completed_subjects,
-        'pending_subjects': pending_subjects,
-        'current_year': int(year_filter) if year_filter and year_filter.isdigit() else None
+        **data,
+        'teacher_performance': teacher_performance,
+        'current_year': year_filter
     }
     return render(request, 'hod_dashboard.html', context)
+
+@user_passes_test(is_hod)
+def generate_report(request):
+    data = HODService.get_dashboard_data()
+    return render(request, 'hod_report.html', data)
+
+@login_required
+def subject_messages(request, subject_id):
+    subject = get_object_or_404(Subject, pk=subject_id)
+    # Authorization: HOD or the assigned teacher
+    if not (request.user.is_hod or request.user == subject.assigned_teacher):
+        messages.error(request, "Unauthorized access.")
+        return redirect('login')
+
+    if request.method == 'POST':
+        text = request.POST.get('text')
+        if text:
+            receiver = subject.assigned_teacher if request.user.is_hod else User.objects.filter(is_hod=True).first()
+            Message.objects.create(
+                subject=subject,
+                sender=request.user,
+                receiver=receiver,
+                text=text
+            )
+            Notification.objects.create(
+                receiver=receiver,
+                sender=request.user,
+                message=f"New message regarding {subject.subject_name}: {text[:50]}..."
+            )
+            messages.success(request, "Message sent.")
+            return redirect('subject_messages', subject_id=subject.id)
+
+    chat_messages = Message.objects.filter(subject=subject).order_by('created_at')
+    # Mark messages as read
+    Message.objects.filter(subject=subject, receiver=request.user).update(is_read=True)
+    
+    return render(request, 'subject_messages.html', {
+        'subject': subject,
+        'chat_messages': chat_messages
+    })
 
 @user_passes_test(is_admin_or_hod)
 def add_subject(request):
@@ -139,9 +184,20 @@ def add_subject(request):
 
 @user_passes_test(is_admin_or_hod)
 def manage_subjects(request):
-    subjects = Subject.objects.all()
+    year_filter = request.GET.get('year')
+    if year_filter and year_filter.isdigit():
+        subjects = Subject.objects.filter(year=int(year_filter)).select_related('assigned_teacher', 'progress')
+        current_year = int(year_filter)
+    else:
+        subjects = Subject.objects.all().select_related('assigned_teacher', 'progress')
+        current_year = None
+    
     teachers = User.objects.filter(is_teacher=True)
-    return render(request, 'manage_subjects.html', {'subjects': subjects, 'teachers': teachers})
+    return render(request, 'manage_subjects.html', {
+        'subjects': subjects, 
+        'teachers': teachers,
+        'current_year': current_year
+    })
 
 @user_passes_test(is_admin_or_hod)
 def delete_subject(request, subject_id):
